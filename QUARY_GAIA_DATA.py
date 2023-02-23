@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 import time
 
 start_time = time.time()
+#first we will upload the table of GAIA ID's we found
 filename = r'C:\Users\avib-\Desktop\research\my tables\table.vot'
 table = votable.parse_single_table(filename)
 
