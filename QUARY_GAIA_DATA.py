@@ -6,39 +6,38 @@ from astropy.table import Table
 from astropy import units as u
 import multiprocessing as mp
 import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
 import time
 
 start_time = time.time()
 #first we will upload the table of GAIA ID's we found
-filename = r'C:\Users\avib-\Desktop\research\my tables\table.vot'
-table = votable.parse_single_table(filename)
+file = #PATH HERE
+table = votable.parse_single_table(file)
 
-# Extract the data from the VOTable and store it in a list of tuples
+# convert the ID's from VOT to list
 source_id = []
 for row in table.array:
-    star_name = row['source_id']
-    source_id.append(str(star_name))  # Convert the numpy.int64 to str
+    id = row['source_id']
+    source_id.append(str(id))  
 
-query_list = [f"'{id_}'" for id_ in source_id]
+ #we will write a GAIA archieve quary for the data we want
+Id_list = [f"'{id}'" for id in source_id]
 query = f"""
 SELECT 
     source_id, ra, dec, phot_g_mean_mag, bp_rp, radial_velocity, vbroad, teff_gspphot, logg_gspphot, mh_gspphot
 FROM
     gaiadr3.gaia_source
 WHERE 
-    source_id IN ({','.join(query_list)})
+    source_id IN ({','.join(Id_list)})
 """
 
-# Launch the async job and retrieve the results as an Astropy table
-job = Gaia.launch_job_async(query, output_format='votable')
-table = job.get_results()
+# we will quary GAIA on-line
+q = Gaia.launch_job_async(query, output_format='votable')
+table = q.get_results()
 
-# Print results
-print(table)
 
-# Define the ADQL query to retrieve data from Gaia DR2
-
-# Add a new column for luminosity based on the photometry data
+# Add a new columns for data based on the photometry data
 distance = 1.0  # Assume 1 kpc distance
 g=table['phot_g_mean_mag']
 abs_mag = table['phot_g_mean_mag'] - 5 * (np.log10(distance) - 1)
@@ -48,7 +47,7 @@ tef=table['teff_gspphot']
 # Add a new column for effective temperature based on the color index
 table['teff'] = 4600 * (1 / (.92 * table['bp_rp'] + 1.7) + 1 / (.92 * table['bp_rp'] + 0.62))
 mh=table['mh_gspphot']
-# Export the table to a FITS file
+#eExport the table
 table.write('gaia_data.fits', overwrite=True)
 rv=table['radial_velocity']
 
