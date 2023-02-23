@@ -6,8 +6,6 @@ from astropy.table import Table
 from astropy import units as u
 import multiprocessing as mp
 import matplotlib.pyplot as plt
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
 import time
 
 start_time = time.time()
@@ -51,61 +49,6 @@ mh=table['mh_gspphot']
 table.write('gaia_data.fits', overwrite=True)
 rv=table['radial_velocity']
 
-import numpy as np
-from astropy.table import Table
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
-
-# Load the data from the FITS file
-gaia_data = Table.read('gaia_data.fits')
-
-# Remove any rows with missing values
-gaia_data = gaia_data.filled(np.nan)
-gaia_data = gaia_data[~np.isnan(gaia_data['teff'])]
-gaia_data = gaia_data[~np.isnan(gaia_data['luminosity'])]
-
-# Split the data into training and testing sets
-X = gaia_data['ra', 'dec', 'phot_g_mean_mag', 'bp_rp', 'radial_velocity', 'teff', 'mass']
-y = gaia_data['luminosity']
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-
-# Standardize the data
-scaler = StandardScaler()
-X_train = scaler.fit_transform(X_train)
-X_test = scaler.transform(X_test)
-from sklearn.neural_network import MLPRegressor
-
-# Train a multi-layer perceptron regressor on the training data
-mlp = MLPRegressor(hidden_layer_sizes=(100, 100), max_iter=500, random_state=42)
-mlp.fit(X_train, y_train)
-from sklearn.metrics import mean_squared_error
-
-# Evaluate the performance of the model on the testing data
-y_pred = mlp.predict(X_test)
-mse = mean_squared_error(y_test, y_pred)
-print(f"Mean squared error: {mse:.2f}")
-
-
-
-fig, ax = plt.subplots()
-im = ax.scatter(tef, g, c=mh, cmap='plasma')
-
-# Set the color bar
-cbar = fig.colorbar(im, ax=ax)
-cbar.set_label('[m/H]')
-
-# Set the labels and title
-ax.set_xlabel('T_eff (Solar Masses)')
-ax.set_ylabel('g (Solar Luminosities)')
-ax.set_title('G vs. T_eff as dependece of the metallicity')
-# add annotations for star masses
-#for i in range(len(rv)):
- #   ax.annotate(f'{rv[i]} M$_\odot$', (tef[i], luminosity[i]))
-plt.show()
-
-
-
-
 end_time = time.time()
 total_time = end_time - start_time
-print(f"Execution time: {total_time:.2f} seconds")
+print(f"Time passed: {total_time:.2f} seconds")
