@@ -23,7 +23,7 @@ for row in table.array:
 Id_list = [f"'{id}'" for id in source_id]
 query = f"""
 SELECT 
-    source_id, ra, dec, phot_g_mean_mag, bp_rp, radial_velocity, vbroad, teff_gspphot, logg_gspphot, mh_gspphot
+    source_id, ra, dec, phot_g_mean_mag, bp_rp, radial_velocity, vbroad, teff_gspspec, logg_gspspec, mh_gspspec, l, b, alphafe_gspspec
 FROM
     gaiadr3.gaia_source
 WHERE 
