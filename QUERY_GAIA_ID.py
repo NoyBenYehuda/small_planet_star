@@ -53,7 +53,7 @@ def coo_query(data):
    return gaia_id_list
 
 
-#I HAVE ABOUT 7000 STARS- I made the run faster using parallel prossecing
+#I HAVE ABOUT 2500 STARS- I made the run faster using parallel prossecing
 
 #1) create a pool of workers
 pool = mp.Pool(processes=8)
