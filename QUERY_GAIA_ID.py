@@ -54,29 +54,32 @@ def coo_query(data):
 
 
 #I HAVE ABOUT 2500 STARS- I made the run faster using parallel prossecing
+if __name__ == '__main__':
+    mp.set_start_method('spawn')  # set multiprocessing context here
 
-#1) create a pool of workers
-pool = mp.Pool(processes=8)
-#2)use all the 8 processes in my computer in parallel
-results = [pool.apply_async(coo_query(data))]
-#3)get the results
-output = [p.get() for p in results]
-# close the pool
-pool.close()
-pool.join()
-#export the results to table
-tbl = Table(rows=[(id,) for id in output], names=('source_id',))
+    #1) create a pool of workers and use all the 8 processes in my computer in parallel
+    num_processes = mp.cpu_count()
+    with mp.Pool(num_processes) as pool:
+        results = pool.apply_async(coo_query, (data,))
 
-# make a new table with GAIA ID's
-filename = #PUT PATH HERE
+        # 2)get the results
+        output=results.get()
+        # close the pool
+        pool.close()
+        pool.join()
+        # export the results to table
+        tbl = Table(rows=[(id,) for id in output], names=('source_id',))
 
-# Write the table to the VOT format
-votable.writeto(tbl, filename)
+        # make a new table with GAIA ID's
+        filename = r'C:\Users\avib-\Desktop\research\my tables\table.vot'
 
+        # Write the table to the VOT format
+        votable.writeto(tbl, filename)
 
-end_time = time.time()
-total_time = end_time - start_time
-print(f"Time passed: {total_time:.2f} seconds")
+        end_time = time.time()
+        total_time = end_time - start_time
+        print(f"Time passed: {total_time:.2f} seconds")
+
 
 
 
